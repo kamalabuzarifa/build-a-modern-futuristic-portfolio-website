@@ -27,17 +27,23 @@ interface ContactSectionProps {
 
 export function ContactSection({ title, description, contactInfoLabels, contactForm }: ContactSectionProps) {
   const [status, setStatus] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
     setStatus(contactForm.sending);
     const formElement = event.currentTarget;
 
     const form = new FormData(formElement);
     const payload = {
-      name: String(form.get("name") ?? ""),
-      email: String(form.get("email") ?? ""),
-      message: String(form.get("message") ?? "")
+      name: String(form.get("name") ?? "").trim(),
+      email: String(form.get("email") ?? "").trim(),
+      message: String(form.get("message") ?? "").trim()
     };
 
     try {
@@ -57,7 +63,7 @@ export function ContactSection({ title, description, contactInfoLabels, contactF
         throw new Error(result?.message ?? "Request failed");
       }
 
-      setStatus(contactForm.success);
+      setStatus(result?.message ?? contactForm.success);
       formElement.reset();
     } catch (error) {
       if (error instanceof Error) {
@@ -66,6 +72,8 @@ export function ContactSection({ title, description, contactInfoLabels, contactF
       } else {
         setStatus(contactForm.genericError);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -102,6 +110,7 @@ export function ContactSection({ title, description, contactInfoLabels, contactF
             <input
               name="name"
               required
+              disabled={isSubmitting}
               placeholder={contactForm.namePlaceholder}
               className="w-full rounded-xl border border-slate-300/80 bg-white/70 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-neon-cyan focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-400"
             />
@@ -109,6 +118,7 @@ export function ContactSection({ title, description, contactInfoLabels, contactF
               name="email"
               type="email"
               required
+              disabled={isSubmitting}
               placeholder={contactForm.emailPlaceholder}
               className="w-full rounded-xl border border-slate-300/80 bg-white/70 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-neon-cyan focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-400"
             />
@@ -116,14 +126,23 @@ export function ContactSection({ title, description, contactInfoLabels, contactF
               name="message"
               required
               rows={5}
+              disabled={isSubmitting}
               placeholder={contactForm.messagePlaceholder}
               className="w-full rounded-xl border border-slate-300/80 bg-white/70 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-neon-cyan focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-400"
             />
-            <button type="submit" className="w-full rounded-xl border border-neon-cyan/70 bg-neon-cyan/10 px-5 py-3 text-sm font-semibold text-neon-cyan hover:shadow-neon">
-              {contactForm.sendButton}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full rounded-xl border border-neon-cyan/70 bg-neon-cyan/10 px-5 py-3 text-sm font-semibold text-neon-cyan hover:shadow-neon disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSubmitting ? contactForm.sending : contactForm.sendButton}
             </button>
           </form>
-          {status && <p className="mt-4 text-sm text-slate-700 dark:text-slate-300">{status}</p>}
+          {status && (
+            <p className="mt-4 text-sm text-slate-700 dark:text-slate-300" aria-live="polite">
+              {status}
+            </p>
+          )}
         </GlassCard>
       </div>
     </section>
