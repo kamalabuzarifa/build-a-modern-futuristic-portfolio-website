@@ -1,0 +1,9 @@
+{
+  "name": "Kamal Abu Zarifa Portfolio",
+  "short_name": "Kamal Portfolio",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06070f",
+  "theme_color": "#06070f",
+  "icons": []
+}

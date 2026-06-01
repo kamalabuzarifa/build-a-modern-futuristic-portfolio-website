@@ -41,7 +41,10 @@ export function ContactSection({ title, description, contactInfoLabels, contactF
     };
 
     try {
-      const defaultApiBase = `${window.location.protocol}//${window.location.hostname}:8000/api`;
+      const isLocal = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+      const defaultApiBase = isLocal
+        ? `${window.location.protocol}//${window.location.hostname}:8000/api`
+        : `${window.location.origin}/api`;
       const apiBase = import.meta.env.VITE_API_URL ?? defaultApiBase;
       const response = await fetch(`${apiBase}/contact`, {
         method: "POST",
