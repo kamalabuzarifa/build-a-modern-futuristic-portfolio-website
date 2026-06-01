@@ -1,0 +1,128 @@
+import { FormEvent, useState } from "react";
+import { GlassCard } from "./GlassCard";
+import { SectionTitle } from "./SectionTitle";
+
+interface ContactSectionProps {
+  title: string;
+  description: string;
+  contactInfoLabels: {
+    email: string;
+    phone: string;
+    linkedin: string;
+    github: string;
+    facebook: string;
+    instagram: string;
+  };
+  contactForm: {
+    namePlaceholder: string;
+    emailPlaceholder: string;
+    messagePlaceholder: string;
+    sendButton: string;
+    sending: string;
+    success: string;
+    fetchError: string;
+    genericError: string;
+  };
+}
+
+export function ContactSection({ title, description, contactInfoLabels, contactForm }: ContactSectionProps) {
+  const [status, setStatus] = useState<string>("");
+
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setStatus(contactForm.sending);
+    const formElement = event.currentTarget;
+
+    const form = new FormData(formElement);
+    const payload = {
+      name: String(form.get("name") ?? ""),
+      email: String(form.get("email") ?? ""),
+      message: String(form.get("message") ?? "")
+    };
+
+    try {
+      const defaultApiBase = `${window.location.protocol}//${window.location.hostname}:8000/api`;
+      const apiBase = import.meta.env.VITE_API_URL ?? defaultApiBase;
+      const response = await fetch(`${apiBase}/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(result?.message ?? "Request failed");
+      }
+
+      setStatus(contactForm.success);
+      formElement.reset();
+    } catch (error) {
+      if (error instanceof Error) {
+        const message = error.message === "Failed to fetch" ? contactForm.fetchError : contactForm.genericError;
+        setStatus(message);
+      } else {
+        setStatus(contactForm.genericError);
+      }
+    }
+  };
+
+  return (
+    <section id="contact" className="mx-auto max-w-6xl px-5 py-14">
+      <SectionTitle title={title} />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <GlassCard>
+          <p className="mb-6 text-slate-700 dark:text-slate-200">{description}</p>
+          <div className="space-y-4 text-sm leading-7 text-slate-700 dark:text-slate-300">
+            <p>
+              {contactInfoLabels.email}: <a className="hover:text-neon-cyan" href="mailto:kamalabuzarifa@gmail.com">kamalabuzarifa@gmail.com</a>
+            </p>
+            <p>
+              {contactInfoLabels.phone}: <a className="hover:text-neon-cyan" href="tel:+97259326412">+972-59326412</a>
+            </p>
+            <p>
+              {contactInfoLabels.linkedin}: <a className="hover:text-neon-cyan" href="https://www.linkedin.com/in/kamal-abuzarifa-777887330/" target="_blank" rel="noreferrer">linkedin.com/in/kamal-abuzarifa-777887330</a>
+            </p>
+            <p>
+              {contactInfoLabels.github}: <a className="hover:text-neon-cyan" href="https://github.com/kamalabuzarifa" target="_blank" rel="noreferrer">github.com/kamalabuzarifa</a>
+            </p>
+            <p>
+              {contactInfoLabels.facebook}: <a className="hover:text-neon-cyan" href="https://www.facebook.com/kamalAbuZarifa2003" target="_blank" rel="noreferrer">facebook.com/kamalAbuZarifa2003</a>
+            </p>
+            <p>
+              {contactInfoLabels.instagram}: <a className="hover:text-neon-cyan" href="https://www.instagram.com/eng_kamal_2003" target="_blank" rel="noreferrer">instagram.com/eng_kamal_2003</a>
+            </p>
+          </div>
+        </GlassCard>
+
+        <GlassCard>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <input
+              name="name"
+              required
+              placeholder={contactForm.namePlaceholder}
+              className="w-full rounded-xl border border-slate-300/80 bg-white/70 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-neon-cyan focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-400"
+            />
+            <input
+              name="email"
+              type="email"
+              required
+              placeholder={contactForm.emailPlaceholder}
+              className="w-full rounded-xl border border-slate-300/80 bg-white/70 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-neon-cyan focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-400"
+            />
+            <textarea
+              name="message"
+              required
+              rows={5}
+              placeholder={contactForm.messagePlaceholder}
+              className="w-full rounded-xl border border-slate-300/80 bg-white/70 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-neon-cyan focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-400"
+            />
+            <button type="submit" className="w-full rounded-xl border border-neon-cyan/70 bg-neon-cyan/10 px-5 py-3 text-sm font-semibold text-neon-cyan hover:shadow-neon">
+              {contactForm.sendButton}
+            </button>
+          </form>
+          {status && <p className="mt-4 text-sm text-slate-700 dark:text-slate-300">{status}</p>}
+        </GlassCard>
+      </div>
+    </section>
+  );
+}
