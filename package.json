@@ -9,10 +9,11 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc --build && vite build",
+    "build": "node ./node_modules/vite/bin/vite.js build",
     "preview": "vite preview",
-    "postinstall": "chmod +x ./node_modules/.bin/tsc"
-  },
+    "postinstall": "chmod +x ./node_modules/.bin/tsc && chmod +x ./node_modules/.bin/vite"
+  }
+,
   "dependencies": {
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
