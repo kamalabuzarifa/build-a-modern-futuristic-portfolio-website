@@ -1,6 +1,78 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { GlassCard } from "./GlassCard";
 import { SectionTitle } from "./SectionTitle";
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const directEmailFields = ["email", "mail", "userEmail", "clientEmail", "customerEmail"];
+const nestedUserFields = ["user", "client", "customer", "profile", "account", "data"];
+
+function extractEmail(value: unknown): string {
+  if (!value) {
+    return "";
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (emailPattern.test(trimmed)) {
+      return trimmed;
+    }
+
+    try {
+      return extractEmail(JSON.parse(trimmed));
+    } catch {
+      return "";
+    }
+  }
+
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+
+    for (const key of directEmailFields) {
+      const candidate = record[key];
+      if (typeof candidate === "string" && emailPattern.test(candidate.trim())) {
+        return candidate.trim();
+      }
+    }
+
+    for (const key of nestedUserFields) {
+      const nested = extractEmail(record[key]);
+      if (nested) {
+        return nested;
+      }
+    }
+  }
+
+  return "";
+}
+
+function resolveClientEmail(): string {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  const storages = [window.localStorage, window.sessionStorage];
+
+  for (const storage of storages) {
+    try {
+      for (let index = 0; index < storage.length; index += 1) {
+        const key = storage.key(index);
+        if (!key) {
+          continue;
+        }
+
+        const rawValue = storage.getItem(key);
+        const email = extractEmail(rawValue);
+        if (email) {
+          return email;
+        }
+      }
+    } catch {
+      continue;
+    }
+  }
+
+  return "";
+}
 
 interface ContactSectionProps {
   title: string;
@@ -22,16 +94,33 @@ interface ContactSectionProps {
     success: string;
     fetchError: string;
     genericError: string;
+    loginRequired: string;
   };
 }
 
 export function ContactSection({ title, description, contactInfoLabels, contactForm }: ContactSectionProps) {
+  const [clientEmail, setClientEmail] = useState("");
   const [status, setStatus] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const syncClientEmail = () => {
+      setClientEmail(resolveClientEmail());
+    };
+
+    syncClientEmail();
+    window.addEventListener("focus", syncClientEmail);
+    return () => window.removeEventListener("focus", syncClientEmail);
+  }, []);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSubmitting) {
+      return;
+    }
+
+    if (!clientEmail) {
+      setStatus(contactForm.loginRequired);
       return;
     }
 
@@ -42,7 +131,7 @@ export function ContactSection({ title, description, contactInfoLabels, contactF
     const form = new FormData(formElement);
     const payload = {
       name: String(form.get("name") ?? "").trim(),
-      email: String(form.get("email") ?? "").trim(),
+      email: clientEmail,
       message: String(form.get("message") ?? "").trim()
     };
 
@@ -118,9 +207,11 @@ export function ContactSection({ title, description, contactInfoLabels, contactF
               name="email"
               type="email"
               required
-              disabled={isSubmitting}
+              readOnly
+              value={clientEmail}
+              aria-readonly="true"
               placeholder={contactForm.emailPlaceholder}
-              className="w-full rounded-xl border border-slate-300/80 bg-white/70 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-neon-cyan focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white dark:placeholder:text-slate-400"
+              className="w-full rounded-xl border border-slate-300/80 bg-slate-100/90 px-4 py-3 text-sm text-slate-600 focus:border-neon-cyan focus:outline-none dark:border-white/15 dark:bg-white/10 dark:text-slate-200"
             />
             <textarea
               name="message"
@@ -132,7 +223,7 @@ export function ContactSection({ title, description, contactInfoLabels, contactF
             />
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !clientEmail}
               className="w-full rounded-xl border border-neon-cyan/70 bg-neon-cyan/10 px-5 py-3 text-sm font-semibold text-neon-cyan hover:shadow-neon disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting ? contactForm.sending : contactForm.sendButton}

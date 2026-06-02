@@ -9,6 +9,8 @@ export interface SkillGroup {
 export interface Project {
   title: string;
   subtitle?: string;
+  image: string;
+  url?: string;
   description: string;
   features: string[];
   technologies: string[];

@@ -39,6 +39,13 @@ export default async function handler(req, res) {
   const to = process.env.CONTACT_TO || smtpUser;
   const from = process.env.CONTACT_FROM || smtpUser;
 
+  if (!isValidEmail(from) || !isValidEmail(to)) {
+    return res.status(500).json({
+      success: false,
+      message: "CONTACT_FROM and CONTACT_TO must be valid email addresses."
+    });
+  }
+
   try {
     const transporter = nodemailer.createTransport({
       host: smtpHost,
@@ -77,4 +84,3 @@ export default async function handler(req, res) {
     });
   }
 }
-

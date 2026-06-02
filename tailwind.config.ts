@@ -12,13 +12,13 @@ export default {
           800: "#11152a"
         },
         neon: {
-          cyan: "#00eaff",
-          blue: "#19a7ff",
+          cyan: "rgb(var(--color-neon-cyan) / <alpha-value>)",
+          blue: "rgb(var(--color-neon-blue) / <alpha-value>)",
           pink: "#ff3ee5"
         }
       },
       boxShadow: {
-        neon: "0 0 25px rgba(0, 234, 255, 0.35)",
+        neon: "0 0 25px rgb(var(--color-neon-cyan) / 0.35)",
         glass: "0 8px 40px rgba(4, 8, 20, 0.45)"
       },
       backdropBlur: {
@@ -30,8 +30,8 @@ export default {
           "50%": { transform: "translateY(-10px)" }
         },
         pulseGlow: {
-          "0%, 100%": { boxShadow: "0 0 8px rgba(0,234,255,0.25)" },
-          "50%": { boxShadow: "0 0 26px rgba(0,234,255,0.6)" }
+          "0%, 100%": { boxShadow: "0 0 8px rgb(var(--color-neon-cyan) / 0.25)" },
+          "50%": { boxShadow: "0 0 26px rgb(var(--color-neon-cyan) / 0.6)" }
         }
       },
       animation: {
