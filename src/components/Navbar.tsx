@@ -27,15 +27,6 @@ export function Navbar({ brandName, labels, language, theme, onToggleTheme, onTo
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-300/70 bg-white/70 backdrop-blur-md dark:border-white/10 dark:bg-base-900/70">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        <button onClick={() => goTo("hero")} className="flex items-center gap-2 text-left text-lg font-semibold text-slate-900 dark:text-white">
-          <img
-            src="/images/logo.png"
-            alt="Logo"
-            className="h-9 w-9 rounded-full object-cover ring-1 ring-slate-300/70 dark:ring-white/15"
-          />
-          <span>{brandName}</span>
-        </button>
-
         <nav className="hidden items-center gap-6 md:flex">
           {labels.map((label, i) => (
             <button
