@@ -5,6 +5,27 @@ import { SectionTitle } from "./SectionTitle";
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const directEmailFields = ["email", "mail", "userEmail", "clientEmail", "customerEmail"];
 const nestedUserFields = ["user", "client", "customer", "profile", "account", "data"];
+const directStorageKeys = [
+  "email",
+  "mail",
+  "userEmail",
+  "clientEmail",
+  "customerEmail",
+  "currentUserEmail",
+  "authEmail"
+];
+const objectStorageKeys = [
+  "user",
+  "client",
+  "customer",
+  "profile",
+  "account",
+  "auth",
+  "authUser",
+  "currentUser",
+  "userData",
+  "userProfile"
+];
 
 function extractEmail(value: unknown): string {
   if (!value) {
@@ -54,6 +75,22 @@ function resolveClientEmail(): string {
 
   for (const storage of storages) {
     try {
+      for (const key of directStorageKeys) {
+        const rawValue = storage.getItem(key);
+        const email = extractEmail(rawValue);
+        if (email) {
+          return email;
+        }
+      }
+
+      for (const key of objectStorageKeys) {
+        const rawValue = storage.getItem(key);
+        const email = extractEmail(rawValue);
+        if (email) {
+          return email;
+        }
+      }
+
       for (let index = 0; index < storage.length; index += 1) {
         const key = storage.key(index);
         if (!key) {
@@ -68,6 +105,20 @@ function resolveClientEmail(): string {
       }
     } catch {
       continue;
+    }
+  }
+
+  const cookies = document.cookie
+    .split(";")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  for (const cookieEntry of cookies) {
+    const [, ...rawValueParts] = cookieEntry.split("=");
+    const cookieValue = decodeURIComponent(rawValueParts.join("="));
+    const email = extractEmail(cookieValue);
+    if (email) {
+      return email;
     }
   }
 
@@ -110,7 +161,14 @@ export function ContactSection({ title, description, contactInfoLabels, contactF
 
     syncClientEmail();
     window.addEventListener("focus", syncClientEmail);
-    return () => window.removeEventListener("focus", syncClientEmail);
+    window.addEventListener("storage", syncClientEmail);
+    document.addEventListener("visibilitychange", syncClientEmail);
+
+    return () => {
+      window.removeEventListener("focus", syncClientEmail);
+      window.removeEventListener("storage", syncClientEmail);
+      document.removeEventListener("visibilitychange", syncClientEmail);
+    };
   }, []);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
