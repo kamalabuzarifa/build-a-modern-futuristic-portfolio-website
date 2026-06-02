@@ -93,7 +93,7 @@ export const content: Record<Language, ContentShape> = {
       grade: "Project Grade: Excellent",
     },
     contactTitle: "Contact",
-    contactDescription: "Let us collaborate on impactful software products.",
+    contactDescription: "Have an idea, project, or collaboration in mind? Send me a message and I will get back to you as soon as possible.",
     contactInfoLabels: {
       email: "Email",
       phone: "Phone",
@@ -103,16 +103,16 @@ export const content: Record<Language, ContentShape> = {
       instagram: "Instagram",
     },
     contactForm: {
-      namePlaceholder: "Your Name",
-      emailPlaceholder: "Your Email",
-      messagePlaceholder: "Your Message",
+      namePlaceholder: "Enter your name",
+      emailPlaceholder: "Enter your email",
+      messagePlaceholder: "Write your message here",
       sendButton: "Send Message",
       sending: "Sending...",
       success:
-        "Your message has been sent successfully. Please allow a few hours for an email reply.",
+        "Your message has been sent successfully. I will get back to you as soon as possible.",
       fetchError:
-        "Could not reach contact server. Make sure backend is running on port 8000.",
-      genericError: "Could not send message. Please try again.",
+        "Unable to reach the contact server. Please make sure the backend is running on port 8000.",
+      genericError: "Something went wrong while sending your message. Please try again.",
       loginRequired: "No logged-in client email was found. Please sign in first.",
     },
     footer: "© 2026 Kamal Abu Zarifa. All Rights Reserved.",
@@ -150,7 +150,7 @@ export const content: Record<Language, ContentShape> = {
       grade: "تقدير المشروع: ممتاز",
     },
     contactTitle: "التواصل",
-    contactDescription: "يسعدني التعاون في بناء منتجات برمجية مؤثرة.",
+    contactDescription: "إذا كان لديك فكرة، مشروع، أو فرصة تعاون، أرسل لي رسالة وسأرد عليك في أقرب وقت ممكن.",
     contactInfoLabels: {
       email: "البريد الإلكتروني",
       phone: "الهاتف",
@@ -160,16 +160,16 @@ export const content: Record<Language, ContentShape> = {
       instagram: "إنستغرام",
     },
     contactForm: {
-      namePlaceholder: "الاسم الكامل",
-      emailPlaceholder: "البريد الإلكتروني",
-      messagePlaceholder: "اكتب رسالتك",
+      namePlaceholder: "اكتب اسمك",
+      emailPlaceholder: "اكتب بريدك الإلكتروني",
+      messagePlaceholder: "اكتب رسالتك هنا",
       sendButton: "إرسال الرسالة",
       sending: "جارٍ الإرسال...",
       success:
-        "تم إرسال رسالتك بنجاح. يرجى الانتظار بضع ساعات للرد عليك عبر البريد الإلكتروني.",
+        "تم إرسال رسالتك بنجاح، وسأقوم بالرد عليك في أقرب وقت ممكن.",
       fetchError:
         "تعذر الوصول إلى خادم التواصل. تأكد من تشغيل الخادم الخلفي على المنفذ 8000.",
-      genericError: "تعذر إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+      genericError: "حدث خطأ أثناء إرسال رسالتك. يرجى المحاولة مرة أخرى.",
       loginRequired: "لم يتم العثور على بريد عميل مسجّل الدخول. يرجى تسجيل الدخول أولًا.",
     },
     footer: "© 2026 كمال أبو ظريفة. جميع الحقوق محفوظة.",
