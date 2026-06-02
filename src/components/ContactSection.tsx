@@ -64,7 +64,7 @@ export function ContactSection({ title, description, contactInfoLabels, contactF
         throw new Error(result?.message ?? "Request failed");
       }
 
-      setStatus(result?.message ?? contactForm.success);
+      setStatus(contactForm.success);
       formElement.reset();
     } catch (error) {
       if (error instanceof Error) {
